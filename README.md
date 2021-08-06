@@ -1,4 +1,12 @@
-## Setup for WSL with zsh and theme
+# Setup for WSL with zsh and theme
+
+![Image of Terminal](https://i.imgur.com/UzIgi6t.png)
+
+1. [Install WSL](#1-install-wsl)
+2. [Setup Windows Terminal](#2-setup-windows-terminal)
+3. [Oh My Zsh](#3-install-oh-my-zsh)
+4. [Install dev tools](#4-install-dev-tools)
+
 
 # 1. Install WSL
 https://docs.microsoft.com/en-us/windows/wsl/install-win10
@@ -10,18 +18,19 @@ Turn on needed Windows features
 dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
 dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
 ```
-Restart
+Restart pc
 
 Download and install Linux kernel https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi
 
 Setup wsl2 `wsl --set-default-version 2`
+
 Install Ubuntu from Microsoft Store
 
 # 2. Setup Windows Terminal
-Install from Microsoft store
-Options and setup WSL as default
+Install from Microsoft Store
 
 Jetbrains mono font from https://www.jetbrains.com/lp/mono/
+
 Color theme Atom One dark to json file
 ```json
  {
@@ -51,7 +60,7 @@ Color theme Atom One dark to json file
 Change font, color scheme for wsl config
 ```json
 {
-    "guid": "{2c4de342-38b7-51cf-b940-2309a097f518}",
+    "guid": "<your guid>",
     "hidden": false,
     "name": "Ubuntu",
     "source": "Windows.Terminal.Wsl",
@@ -59,24 +68,72 @@ Change font, color scheme for wsl config
     "colorScheme": "Atom One Dark",
 },
 ```
-In Windows Terminal Settings UI change starting directory with help of `explorer.exe .` in a wsl shell and change it as default profile
-# 2. Install zsh
-Install required programs and setup git autocrlf
+In Windows Terminal Settings UI change startup profile to wsl and wsl starting directory with help of `explorer.exe .` in a wsl shell and change it as default profile
+
+# 3. Install Oh My Zsh
+Install git zsh and ohmyzsh
 ```sh
 sudo apt update
 sudo apt install git zsh -y
-git config --global core.autocrlf input
 
 sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
 Change `~/.zshrc` theme to be "agnoster"
+
 Change the prompt to be nicer `vi ~/.oh-my-zsh/themes/agnoster.zsh-theme` and line 92 to 
-```
+```sh
 prompt_segment green black "%(!.%{%F{yellow}%}.)%n"
 ```
-# 3. Install dev tools
-Nodejs
+
+### Zsh plugins
+
+Syntax highlight
+```sh
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.zsh/zsh-syntax-highlighting
 ```
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+Auto suggestions
+```sh
+git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+```
+
+Then edit `~/.zshrc`
+```sh
+plugins=(
+    git
+    npm
+    z
+)
+# Source files for cloned plugins
+source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+```
+# 4. Install dev tools
+Nodejs with nvm
+```sh
+curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh" | bash
 nvm install --lts
+```
+Setup git autocrlf
+```sh
+git config --global core.autocrlf input
+```
+Java, build-essential, python-as-python3, ffmpeg
+```sh
+sudo apt update
+sudo apt install ffmpeg build-essential python-is-python3 default-jre
+```
+
+### Docker
+```sh
+sudo apt install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo apt-key fingerprint 0EBFCD88
+# Should print 9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88
+
+# Run rest after confirming fingerprint
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+sudo apt update
+sudo apt install docker-ce
+sudo service docker start
 ```
